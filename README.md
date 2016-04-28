@@ -7,3 +7,8 @@ To build this package, install all dependencies with `npm install`, then run `np
 
 ## Developing
 This package is built with typescript, which is basically javascript + type information. For more information on typescript, see http://www.typescriptlang.org/.
+
+## Releasing
+To create a new release, on the master branch run [npm version](https://docs.npmjs.com/cli/version) and upload the created archive to github.
+
+The `npm version` command will create a new commit that changes the version number and a tag that will be pushed to github.
