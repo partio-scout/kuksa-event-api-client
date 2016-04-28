@@ -1,4 +1,5 @@
 import { request as superagent } from './superagent';
+import * as Json from './json';
 
 export function getEventApi(configuration: EventApiConfiguration): EventApi {
   function request<TResult>(resource: string, dateRange: DateRange, transformer: (jsonObject: any) => TResult): Promise<TResult> {
@@ -54,7 +55,7 @@ export function getEventApi(configuration: EventApiConfiguration): EventApi {
   };
 }
 
-function getName(jsonObject: any): LocalizedString {
+function getName(jsonObject: Json.LokalisoidullaNimella): LocalizedString {
   return {
     fi: jsonObject.Nimi,
     se: jsonObject.NimiSE,
@@ -62,7 +63,7 @@ function getName(jsonObject: any): LocalizedString {
   };
 }
 
-function mapEventInfo(result: any) {
+function mapEventInfo(result: Json.TapahtumaTiedot) {
   return {
     startDate: new Date(result.Alkupvm),
     endDate: new Date(result.Loppupvm),
@@ -70,14 +71,14 @@ function mapEventInfo(result: any) {
   };
 }
 
-function mapSubCamp(result: any) {
+function mapSubCamp(result: Json.TapahtumaAlaleiri) {
   return {
     id: result.Id,
     name: result.Nimi,
   };
 }
 
-function mapVillage(result: any) {
+function mapVillage(result: Json.TapahtumaKyla) {
   return {
     id: result.Id,
     subCamp: result.AlaleiriId,
@@ -85,22 +86,14 @@ function mapVillage(result: any) {
   };
 }
 
-function mapQuestionSeries(result: any) {
+function mapQuestionSeries(result: Json.TapahtumaKysymyssarja) {
   return {
     id: result.Id,
     name: getName(result),
   };
 }
 
-function mapExtraInfoField(result: any) {
-  return {
-    id: result.Id,
-    questionSeries: result.KysymyssarjaId,
-    name: getName(result),
-  };
-}
-
-function mapExtraSelectionGroup(result: any) {
+function mapExtraInfoField(result: Json.TapahtumaLisatietokentta) {
   return {
     id: result.Id,
     questionSeries: result.KysymyssarjaId,
@@ -108,7 +101,15 @@ function mapExtraSelectionGroup(result: any) {
   };
 }
 
-function mapExtraSelection(result: any) {
+function mapExtraSelectionGroup(result: Json.TapahtumaLisavalinnanPaaryhma) {
+  return {
+    id: result.Id,
+    questionSeries: result.KysymyssarjaId,
+    name: getName(result),
+  };
+}
+
+function mapExtraSelection(result: Json.TapahtumaLisavalinta) {
   return {
     id: result.Id,
     extraSelectionGroup: result.PaaryhmaId,
@@ -116,14 +117,14 @@ function mapExtraSelection(result: any) {
   };
 }
 
-function mapPaymentGroup(result: any) {
+function mapPaymentGroup(result: Json.TapahtumaMaksunPaaryhma) {
   return {
     id: result.Id,
     name: getName(result),
   };
 }
 
-function mapPayment(result: any) {
+function mapPayment(result: Json.TapahtumaMaksu) {
   return {
     id: result.Id,
     paymentGroup: result.PaaryhmaId,
@@ -131,7 +132,7 @@ function mapPayment(result: any) {
   };
 }
 
-function mapCampGroup(result: any) {
+function mapCampGroup(result: Json.Leirilippukunta) {
   return {
     id: result.Id,
     subCamp: result.AlaleiriId,
@@ -140,7 +141,7 @@ function mapCampGroup(result: any) {
   };
 }
 
-function mapCampGroupExtraInfo(result: any) {
+function mapCampGroupExtraInfo(result: Json.LeirilippukuntaLisatietokentta) {
   return {
     for: result.LeirilippukuntaId,
     extraInfoField: result.LisatietokenttaId,
@@ -148,21 +149,21 @@ function mapCampGroupExtraInfo(result: any) {
   };
 }
 
-function mapCampGroupExtraSelection(result: any) {
+function mapCampGroupExtraSelection(result: Json.LeirilippukuntaLisavalinta) {
   return {
     from: result.LeirilippukuntaId,
     to: result.LisavalintaId,
   };
 }
 
-function mapCampGroupPayment(result: any) {
+function mapCampGroupPayment(result: Json.LeirilippukuntaMaksu) {
   return {
     from: result.LeirilippukuntaId,
     to: result.MaksuId,
   };
 }
 
-function mapParticipant(result: any) {
+function mapParticipant(result: Json.Osallistuja) {
   return {
     id: result.Id,
     firstName: result.Etunimi,
@@ -197,7 +198,7 @@ function mapParticipant(result: any) {
   };
 }
 
-function mapParticipantExtraInfo(result: any) {
+function mapParticipantExtraInfo(result: Json.OsallistujaLisatietokentta) {
   return {
     for: result.OsallistujaId,
     extraInfoField: result.LisatietokenttaId,
@@ -205,21 +206,21 @@ function mapParticipantExtraInfo(result: any) {
   };
 }
 
-function mapParticipantExtraSelection(result: any) {
+function mapParticipantExtraSelection(result: Json.OsallistujaLisavalinta) {
   return {
     from: result.OsallistujaId,
     to: result.LisavalintaId,
   };
 }
 
-function mapParticipantPayment(result: any) {
+function mapParticipantPayment(result: Json.OsallistujaMaksu) {
   return {
     from: result.OsallistujaId,
     to: result. MaksuId,
   };
 }
 
-function mapGroup(result: any) {
+function mapGroup(result: Json.Ryhma) {
   return {
     id: result.Id,
     subCamp: result.AlaleiriId,
@@ -233,7 +234,7 @@ function mapGroup(result: any) {
   };
 }
 
-function mapGroupExtraInfo(result: any) {
+function mapGroupExtraInfo(result: Json.RyhmaLisatietokentta) {
   return {
     for: result.RyhmaId,
     extraInfoField: result.LisatietokenttaId,
@@ -241,14 +242,14 @@ function mapGroupExtraInfo(result: any) {
   };
 }
 
-function mapGroupExtraSelection(result: any) {
+function mapGroupExtraSelection(result: Json.RyhmaLisavalinta) {
   return {
     from: result.RyhmaId,
     to: result.LisavalintaId,
   };
 }
 
-function mapGroupPayment(result: any) {
+function mapGroupPayment(result: Json.RyhmaMaksu) {
   return {
     from: result.RyhmaId,
     to: result. MaksuId,
