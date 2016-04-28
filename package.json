@@ -7,7 +7,10 @@
   "scripts": {
     "build": "tsc"
   },
-  "dependencies": {},
+  "dependencies": {
+    "superagent": "^1.8.3",
+    "superagent-as-promised": "^4.0.0"
+  },
   "devDependencies": {
     "typescript": "^1.8.10"
   },

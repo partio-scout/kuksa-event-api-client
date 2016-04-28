@@ -1,5 +1,106 @@
+import { request as superagent } from './superagent';
+
 export function getEventApi(configuration: EventApiConfiguration): EventApi {
-  return null;
+  function request<TResult>(resource: string, dateRange: DateRange, transformer: (jsonObject: any) => TResult): Promise<TResult> {
+    let baseRequest = superagent.get(`${configuration.endpoint}/${resource}`)
+      .auth(configuration.username, configuration.password)
+      .accept('application/json')
+      .query({ Guid: configuration.eventId });
+
+    if (dateRange) {
+      baseRequest = baseRequest.query({ Alkupvm: dateRange.startDate, Loppupvm: dateRange.endDate });
+    }
+
+    return baseRequest
+      .then((response: any) => {
+        if (!response.ok) {
+          throw new Error('The request failed');
+        }
+        return response;
+      })
+      .then((response: any) => transformer(response.body));
+  }
+
+  function getName(jsonObject: any): LocalizedString {
+    return {
+      fi: jsonObject.Nimi,
+      se: jsonObject.NimiSE,
+      en: jsonObject.NimiEN,
+    };
+  }
+
+  function createRequestFunc<TResult>(resource: string, transformer: (jsonObject: any) => TResult): (dateRange?: DateRange) => Promise<TResult> {
+    return (dateRange?: DateRange) => request(resource, dateRange, transformer);
+  }
+
+  function createCollectionRequestFunc<TSingleResult>(resource: string, transformer: (jsonObject: any) => TSingleResult): (dateRange?: DateRange) => Promise<Array<TSingleResult>> {
+    return createRequestFunc<Array<TSingleResult>>(resource, (result: any) => result.map(transformer));
+  }
+
+  return {
+    getEventInfo: createRequestFunc<EventInfo>('Tapahtuma', (result: any) => ({ startDate: new Date(result.Alkupvm), endDate: new Date(result.Loppupvm), name: getName(result) })),
+    getSubCamps: createCollectionRequestFunc<SubCamp>('TapahtumaAlaleirit', (result: any) => ({ id: result.Id, name: result.Name })),
+    getVillages: createCollectionRequestFunc<Village>('TapahtumaKylat', (result: any) => ({ id: result.Id, subCamp: result.AlaleiriId, name: result.Nimi })),
+    getQuestionSeries: createCollectionRequestFunc<QuestionSeries>('TapahtumaKysymyssarjat', (result: any) => ({ id: result.Id, name: getName(result) })),
+    getExtraInfoFields: createCollectionRequestFunc<ExtraInfoField>('TapahtumaLisatietokentat', (result: any) => ({ id: result.Id, questionSeries: result.KysymyssarjaId, name: getName(result) })),
+    getExtraSelectionGroups: createCollectionRequestFunc<ExtraSelectionGroup>('TapahtumaLisavalinnanPaaryhmat', (result: any) => ({ id: result.Id, questionSeries: result.KysymyssarjaId, name: getName(result) })),
+    getExtraSelections: createCollectionRequestFunc<ExtraSelection>('TapahtumaLisavalinnat', (result: any) => ({ id: result.Id, extraSelectionGroup: result.PaaryhmaId, name: getName(result) })),
+    getPaymentGroups: createCollectionRequestFunc<PaymentGroup>('TapahtumaMaksunPaaryhmat', (result: any) => ({ id: result.Id, name: getName(result) })),
+    getPayments: createCollectionRequestFunc<Payment>('TapahtumaMaksut', (result: any) => ({ id: result.Id, paymentGroup: result.PaaryhmaId, name: getName(result) })),
+    getCampGroups: createCollectionRequestFunc<CampGroup>('Leirilippukunnat', (result: any) => ({ id: result.Id, subCamp: result.AlaleiriId, village: result.KylaId, name: result.Nimi })),
+    getCampGroupExtraInfos: createCollectionRequestFunc<ExtraInfo<CampGroup>>('LeirilippukunnatLisatietokentat', (result: any) => ({ for: result.LeirilippukuntaId, extraInfoField: result.LisatietokenttaId, value: result.Lisatiedot })),
+    getCampGroupExtraSelections: createCollectionRequestFunc<IdMapping<CampGroup, ExtraSelection>>('LeirilippukunnatLisavalinnat', (result: any) => ({ from: result.LeirilippukuntaId, to: result.LisavalintaId })),
+    getCampGroupPayments: createCollectionRequestFunc<IdMapping<CampGroup, Payment>>('LeirilippukunnatMaksut', (result: any) => ({ from: result.LeirilippukuntaId, to: result.MaksuId })),
+    getParticipants: createCollectionRequestFunc<Participant>('Osallistujat', (result: any) => ({
+      id: result.Id,
+      firstName: result.Etunimi,
+      lastName: result.Sukunimi,
+      address: {
+        street: result.Katuosoite,
+        postCode: result.Postinumero,
+        postOffice: result.Postitoimipaikka,
+        country: result.Postimaa,
+        extra: result.Lisaosoite,
+      },
+      phoneNumber: result.Puhelinnumero,
+      email: result.Email,
+      diet: result.Erikoisruokavalio,
+      birthDate: new Date(result.Syntymaaika),
+      age: result.Ika,
+      signUpDate: new Date(result.Ilmoittautumispvm),
+      representedParty: result.TahoJotaEdustaa,
+      districtOfOrganization: result.EdustusorganisaationPiiri,
+      accommodation: result.Majoittuminen,
+      accommodationWithLocalGroup: result.MajoittuuLippukunnassa,
+      accommodationExtraInfo: result.MajoittumisenLisatiedot,
+      guardian: {
+        name: result.HuoltajanNimi,
+        phoneNumber: result.HuoltajanPuhelinnumero,
+        email: result.HuoltajanEmail,
+      },
+      group: result.RyhmaId,
+      subCamp: result.AlaleiriId,
+      campGroup: result.LeirilippukuntaId,
+      cancelled: result.Perunut,
+    })),
+    getParticipantExtraInfos: createCollectionRequestFunc<ExtraInfo<Participant>>('OsallistujatLisatietokentat', (result: any) => ({ for: result.OsallistujaId, extraInfoField: result.LisatietokenttaId, value: result.Lisatiedot })),
+    getParticipantExtraSelections: createCollectionRequestFunc<IdMapping<Participant, ExtraSelection>>('OsallistujatLisavalinnat', (result: any) => ({ from: result.OsallistujaId, to: result.LisavalintaId })),
+    getParticipantPayments: createCollectionRequestFunc<IdMapping<Participant, Payment>>('OsallistujatMaksut', (result: any) => ({ from: result.OsallistujaId, to: result. MaksuId })),
+    getGroups: createCollectionRequestFunc<Group>('Ryhmat', (result: any) => ({
+      id: result.Id,
+      subCamp: result.AlaleiriId,
+      village: result.KylaId,
+      campGroup: result.LeirilippukuntaId,
+      name: result.Nimi,
+      scoutOrganization: result.Partiojärjestö,
+      locality: result.Paikkakunta,
+      country: result.Maa,
+      countryCode: result.Maakoodi,
+    })),
+    getGroupExtraInfos: createCollectionRequestFunc<ExtraInfo<Group>>('RyhmatLisatietokentat', (result: any) => ({ for: result.RyhmaId, extraInfoField: result.LisatietokenttaId, value: result.Lisatiedot })),
+    getGroupExtraSelections: createCollectionRequestFunc<IdMapping<Group, ExtraSelection>>('RyhmatLisavalinnat', (result: any) => ({ from: result.RyhmaId, to: result.LisavalintaId })),
+    getGroupPayments: createCollectionRequestFunc<IdMapping<Group, Payment>>('RyhmatMaksut', (result: any) => ({ from: result.RyhmaId, to: result. MaksuId })),
+  };
 }
 
 export interface EventApiConfiguration {
@@ -9,7 +110,7 @@ export interface EventApiConfiguration {
   password: string;
 }
 
-export interface Promise<TResult> { }
+export type Promise<TResult> = any
 
 export interface EventApi {
   getEventInfo(dateRange?: DateRange): Promise<EventInfo>;
