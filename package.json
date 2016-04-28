@@ -1,0 +1,23 @@
+{
+  "name": "kuksa-event-api-client",
+  "version": "0.0.0",
+  "description": "Client for the kuksa api for event information.",
+  "main": "dist/lib.js",
+  "typings": "dist/lib.d.ts",
+  "scripts": {
+    "build": "tsc"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "typescript": "^1.8.10"
+  },
+  "files": [
+    "dist"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:partio-scout/kuksa-event-api-client.git"
+  },
+  "private": true,
+  "licence": "UNLICENCED"
+}

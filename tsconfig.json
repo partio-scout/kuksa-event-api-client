@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "module": "commonJs",
+    "removeComments": true,
+    "outDir": "dist",
+    "sourceMap": true,
+    "declaration": true,
+    "moduleResolution": "node",
+    "noImplicitAny": true,
+    "noImplicitReturns": true
+  },
+  "files": [
+    "src/lib.ts"
+  ]
+}
