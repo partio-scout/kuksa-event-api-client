@@ -48,10 +48,10 @@ export function getEventApi(configuration: EventApiConfiguration): EventApi {
     getParticipantExtraInfos: createCollectionRequestFunc<ExtraInfo<Participant>>('OsallistujatLisatietokentat', mapParticipantExtraInfo),
     getParticipantExtraSelections: createCollectionRequestFunc<IdMapping<Participant, ExtraSelection>>('OsallistujatLisavalinnat', mapParticipantExtraSelection),
     getParticipantPayments: createCollectionRequestFunc<IdMapping<Participant, Payment>>('OsallistujatMaksut', mapParticipantPayment),
-    getGroups: createCollectionRequestFunc<Group>('Ryhmat', mapGroup),
-    getGroupExtraInfos: createCollectionRequestFunc<ExtraInfo<Group>>('RyhmatLisatietokentat', mapGroupExtraInfo),
-    getGroupExtraSelections: createCollectionRequestFunc<IdMapping<Group, ExtraSelection>>('RyhmatLisavalinnat', mapGroupExtraSelection),
-    getGroupPayments: createCollectionRequestFunc<IdMapping<Group, Payment>>('RyhmatMaksut', mapGroupPayment),
+    getLocalGroups: createCollectionRequestFunc<LocalGroup>('Ryhmat', mapLocalGroup),
+    getLocalGroupExtraInfos: createCollectionRequestFunc<ExtraInfo<LocalGroup>>('RyhmatLisatietokentat', mapLocalGroupExtraInfo),
+    getLocalGroupExtraSelections: createCollectionRequestFunc<IdMapping<LocalGroup, ExtraSelection>>('RyhmatLisavalinnat', mapLocalGroupExtraSelection),
+    getLocalGroupPayments: createCollectionRequestFunc<IdMapping<LocalGroup, Payment>>('RyhmatMaksut', mapLocalGroupPayment),
   };
 }
 
@@ -220,7 +220,7 @@ function mapParticipantPayment(result: Json.OsallistujaMaksu) {
   };
 }
 
-function mapGroup(result: Json.Ryhma) {
+function mapLocalGroup(result: Json.Ryhma) {
   return {
     id: result.Id,
     subCamp: result.AlaleiriId,
@@ -234,7 +234,7 @@ function mapGroup(result: Json.Ryhma) {
   };
 }
 
-function mapGroupExtraInfo(result: Json.RyhmaLisatietokentta) {
+function mapLocalGroupExtraInfo(result: Json.RyhmaLisatietokentta) {
   return {
     for: result.RyhmaId,
     extraInfoField: result.LisatietokenttaId,
@@ -242,14 +242,14 @@ function mapGroupExtraInfo(result: Json.RyhmaLisatietokentta) {
   };
 }
 
-function mapGroupExtraSelection(result: Json.RyhmaLisavalinta) {
+function mapLocalGroupExtraSelection(result: Json.RyhmaLisavalinta) {
   return {
     from: result.RyhmaId,
     to: result.LisavalintaId,
   };
 }
 
-function mapGroupPayment(result: Json.RyhmaMaksu) {
+function mapLocalGroupPayment(result: Json.RyhmaMaksu) {
   return {
     from: result.RyhmaId,
     to: result. MaksuId,
@@ -283,10 +283,10 @@ export interface EventApi {
   getParticipantExtraInfos(dateRange?: DateRange): Promise<Array<ExtraInfo<Participant>>>;
   getParticipantExtraSelections(dateRange?: DateRange): Promise<Array<IdMapping<Participant, ExtraSelection>>>
   getParticipantPayments(dateRange?: DateRange): Promise<Array<IdMapping<Participant, Payment>>>;
-  getGroups(dateRange?: DateRange): Promise<Array<Group>>;
-  getGroupExtraInfos(dateRange?: DateRange): Promise<Array<ExtraInfo<Group>>>;
-  getGroupExtraSelections(dateRange?: DateRange): Promise<Array<IdMapping<Group, ExtraSelection>>>
-  getGroupPayments(dateRange?: DateRange): Promise<Array<IdMapping<Group, Payment>>>;
+  getLocalGroups(dateRange?: DateRange): Promise<Array<LocalGroup>>;
+  getLocalGroupExtraInfos(dateRange?: DateRange): Promise<Array<ExtraInfo<LocalGroup>>>;
+  getLocalGroupExtraSelections(dateRange?: DateRange): Promise<Array<IdMapping<LocalGroup, ExtraSelection>>>
+  getLocalGroupPayments(dateRange?: DateRange): Promise<Array<IdMapping<LocalGroup, Payment>>>;
 }
 
 export interface DateRange {
@@ -381,7 +381,7 @@ export interface Participant {
   accommodationWithLocalGroup: string;
   accommodationExtraInfo: string;
   guardian: Guardian;
-  group: Id<Group>;
+  group: Id<LocalGroup>;
   subCamp: Id<SubCamp>;
   campGroup: Id<CampGroup>;
   cancelled: boolean;
@@ -401,8 +401,8 @@ export interface Guardian {
   email: string;
 }
 
-export interface Group {
-  id: Id<Group>;
+export interface LocalGroup {
+  id: Id<LocalGroup>;
   subCamp: Id<SubCamp>;
   village: Id<Village>;
   campGroup: Id<CampGroup>;
