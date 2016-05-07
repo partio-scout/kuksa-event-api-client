@@ -63,6 +63,7 @@ export interface SubCamp {
 export interface Village {
   id: Id<Village>;
   subCamp: Id<SubCamp>;
+  name: string;
 }
 
 export interface QuestionSeries {
