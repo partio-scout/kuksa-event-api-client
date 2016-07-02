@@ -126,6 +126,7 @@ export interface Participant {
   guardian: Guardian;
   group: Id<LocalGroup>;
   subCamp: Id<SubCamp>;
+  village: Id<Village>;
   campGroup: Id<CampGroup>;
   cancelled: boolean;
 }

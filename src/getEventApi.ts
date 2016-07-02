@@ -195,6 +195,7 @@ function mapParticipant(result: Json.Osallistuja) {
     },
     group: result.RyhmaId,
     subCamp: result.AlaleiriId,
+    village: result.KylaId,
     campGroup: result.LeirilippukuntaId,
     cancelled: result.Perunut,
   };
