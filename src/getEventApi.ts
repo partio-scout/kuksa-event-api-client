@@ -168,8 +168,10 @@ function mapCampGroupPayment(result: Json.LeirilippukuntaMaksu) {
 function mapParticipant(result: Json.Osallistuja) {
   return {
     id: result.Id,
+    memberNumber: result.Jasennro,
     firstName: result.Etunimi,
     lastName: result.Sukunimi,
+    nickname: result.Partionimi,
     address: {
       street: result.Katuosoite,
       postCode: result.Postinumero,

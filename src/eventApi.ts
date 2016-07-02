@@ -109,8 +109,10 @@ export interface CampGroup {
 
 export interface Participant {
   id: Id<Participant>;
+  memberNumber: string;
   firstName: string;
   lastName: string;
+  nickname: string;
   address: Address;
   phoneNumber: string;
   email: string;

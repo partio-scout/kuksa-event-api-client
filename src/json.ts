@@ -23,8 +23,10 @@ export interface LeirilippukuntaMaksu {
 
 export interface Osallistuja {
   Id: number;
+  Jasennro: string;
   Etunimi: string;
   Sukunimi: string;
+  Partionimi: string;
   Lisaosoite: string;
   Katuosoite: string;
   Postinumero: string;
