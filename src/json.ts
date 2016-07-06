@@ -70,7 +70,7 @@ export interface OsallistujaMaksu {
 }
 
 export interface OsallistujatMaksunTila {
-  OsallistujaId: number;
+  OsallistuminenId: number;
   TilaisuusId: number;
   Laskutettu: string;
   Maksettu: string;
