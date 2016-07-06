@@ -50,6 +50,7 @@ export function getEventApi(configuration: EventApi.EventApiConfiguration): Even
     getParticipantExtraInfos: createCollectionRequestFunc<EventApi.ExtraInfo<EventApi.Participant>>('OsallistujatLisatietokentat', mapParticipantExtraInfo),
     getParticipantExtraSelections: createCollectionRequestFunc<EventApi.IdMapping<EventApi.Participant, EventApi.ExtraSelection>>('OsallistujatLisavalinnat', mapParticipantExtraSelection),
     getParticipantPayments: createCollectionRequestFunc<EventApi.IdMapping<EventApi.Participant, EventApi.Payment>>('OsallistujatMaksut', mapParticipantPayment),
+    getParticipantPaymentStatus: createCollectionRequestFunc<EventApi.PaymentStatus<EventApi.Participant>>('OsallistujatMaksunTila', mapParticipantPaymentStatus),
     getLocalGroups: createCollectionRequestFunc<EventApi.LocalGroup>('Ryhmat', mapLocalGroup),
     getLocalGroupExtraInfos: createCollectionRequestFunc<EventApi.ExtraInfo<EventApi.LocalGroup>>('RyhmatLisatietokentat', mapLocalGroupExtraInfo),
     getLocalGroupExtraSelections: createCollectionRequestFunc<EventApi.IdMapping<EventApi.LocalGroup, EventApi.ExtraSelection>>('RyhmatLisavalinnat', mapLocalGroupExtraSelection),
@@ -222,6 +223,14 @@ function mapParticipantPayment(result: Json.OsallistujaMaksu) {
   return {
     from: result.OsallistujaId,
     to: result. MaksuId,
+  };
+}
+
+function mapParticipantPaymentStatus(result: Json.OsallistujatMaksunTila) {
+  return {
+    for: result.OsallistujaId,
+    billed: new Date(result.Laskutettu),
+    paid: new Date(result.Maksettu),
   };
 }
 

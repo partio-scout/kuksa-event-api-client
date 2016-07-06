@@ -69,6 +69,13 @@ export interface OsallistujaMaksu {
   MaksuId: number;
 }
 
+export interface OsallistujatMaksunTila {
+  OsallistujaId: number;
+  TilaisuusId: number;
+  Laskutettu: string;
+  Maksettu: string;
+}
+
 export interface Ryhma {
   Id: number;
   AlaleiriId: number;

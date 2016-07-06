@@ -18,6 +18,7 @@ export interface EventApi {
   getParticipantExtraInfos(dateRange?: DateRange): Promise<Array<ExtraInfo<Participant>>>;
   getParticipantExtraSelections(dateRange?: DateRange): Promise<Array<IdMapping<Participant, ExtraSelection>>>
   getParticipantPayments(dateRange?: DateRange): Promise<Array<IdMapping<Participant, Payment>>>;
+  getParticipantPaymentStatus(dateRange?: DateRange): Promise<PaymentStatus<Participant>>;
   getLocalGroups(dateRange?: DateRange): Promise<Array<LocalGroup>>;
   getLocalGroupExtraInfos(dateRange?: DateRange): Promise<Array<ExtraInfo<LocalGroup>>>;
   getLocalGroupExtraSelections(dateRange?: DateRange): Promise<Array<IdMapping<LocalGroup, ExtraSelection>>>
@@ -98,6 +99,12 @@ export interface Payment {
   id: Id<Payment>;
   paymentGroup: Id<PaymentGroup>;
   name: LocalizedString;
+}
+
+export interface PaymentStatus<For> {
+  for: Id<For>;
+  billed: Date;
+  paid: Date;
 }
 
 export interface CampGroup {
