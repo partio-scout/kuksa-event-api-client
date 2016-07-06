@@ -229,8 +229,8 @@ function mapParticipantPayment(result: Json.OsallistujaMaksu) {
 function mapParticipantPaymentStatus(result: Json.OsallistujatMaksunTila) {
   return {
     for: result.OsallistuminenId,
-    billed: new Date(result.Laskutettu),
-    paid: new Date(result.Maksettu),
+    billed: result.Laskutettu && new Date(result.Laskutettu),
+    paid: result.Maksettu && new Date(result.Maksettu),
   };
 }
 
