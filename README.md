@@ -11,6 +11,7 @@ The main entry point for the library is the `getEventApi`-function. It takes as 
 |username      | username for http basic auth                            |
 |password      | password for http basic auth                            |
 |eventId       | the id of the event we want to access                   |
+|proxy         | optional proxy server url                               |
 
 As a return value you'll get an event api object. It contains several functions for fetching various datasets through the api. All of the functions return [promises](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise), and optionally take an object specifying a date range. If the date range is specified, only objects which have changed within that range will be returned. For a list of all functions, see [eventApi.ts](src/eventApi.ts).
 
