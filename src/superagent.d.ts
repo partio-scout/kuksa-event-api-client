@@ -8,4 +8,7 @@ declare module 'superagent-as-promised' {
   export = superagentAsPromised;
 }
 
-
+declare module 'superagent-proxy' {
+  function superagentProxy(superagent: any): any;
+  export = superagentProxy;
+}

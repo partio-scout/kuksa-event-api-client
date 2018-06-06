@@ -14,6 +14,10 @@ export function getEventApi(configuration: EventApi.EventApiConfiguration): Even
       baseRequest = baseRequest.query({ Alkupvm: dateRange.startDate, Loppupvm: dateRange.endDate });
     }
 
+    if (configuration.proxy) {
+      baseRequest = baseRequest.proxy(configuration.proxy);
+    }
+
     return baseRequest
       .then((response: any) => {
         if (!response.ok) {

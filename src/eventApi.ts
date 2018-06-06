@@ -30,6 +30,7 @@ export interface EventApiConfiguration {
   eventId: string;
   username: string;
   password: string;
+  proxy: string;
 }
 
 export interface DateRange {
