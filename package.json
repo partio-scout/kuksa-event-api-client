@@ -1,6 +1,6 @@
 {
   "name": "kuksa-event-api-client",
-  "version": "2.3.1",
+  "version": "2.4.0",
   "description": "Client for the kuksa api for event information.",
   "main": "dist/lib.js",
   "typings": "dist/lib.d.ts",
