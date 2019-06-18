@@ -51,6 +51,7 @@ export interface Osallistuja {
   KylaId: number;
   LeirilippukuntaId: number;
   Perunut: boolean;
+  TapahtumaId: number;
 }
 
 export interface OsallistujaLisatietokentta {

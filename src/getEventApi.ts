@@ -205,6 +205,7 @@ function mapParticipant(result: Json.Osallistuja) {
     village: result.KylaId,
     campGroup: result.LeirilippukuntaId,
     cancelled: result.Perunut,
+    participationId: result.TapahtumaId,
   };
 }
 

@@ -139,6 +139,7 @@ export interface Participant {
   village: Id<Village>;
   campGroup: Id<CampGroup>;
   cancelled: boolean;
+  participationId: number;
 }
 
 export interface Address {
