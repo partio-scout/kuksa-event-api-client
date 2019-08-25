@@ -104,8 +104,8 @@ export interface Payment {
 
 export interface PaymentStatus<For> {
   for: Id<For>;
-  billed: Date;
-  paid: Date;
+  billed: Date | undefined;
+  paid: Date | undefined;
 }
 
 export interface CampGroup {

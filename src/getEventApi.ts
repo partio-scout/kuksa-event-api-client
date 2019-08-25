@@ -4,7 +4,7 @@ import * as Json from './json';
 import * as EventApi from './eventApi';
 
 export function getEventApi(configuration: EventApi.EventApiConfiguration): EventApi.EventApi {
-  function request<TResult>(resource: string, dateRange: EventApi.DateRange, transformer: (jsonObject: any) => TResult): Promise<TResult> {
+  function request<TResult>(resource: string, dateRange: EventApi.DateRange | undefined, transformer: (jsonObject: any) => TResult): Promise<TResult> {
     let baseRequest = superagent.get(`${configuration.endpoint}/${resource}`)
       .auth(configuration.username, configuration.password)
       .accept('application/json')
@@ -28,11 +28,13 @@ export function getEventApi(configuration: EventApi.EventApiConfiguration): Even
       .then((response: any) => transformer(response.body));
   }
 
-  function createRequestFunc<TResult>(resource: string, transformer: (jsonObject: any) => TResult): (dateRange?: EventApi.DateRange) => Promise<TResult> {
+  type RequestFunc<T> = (dateRange?: EventApi.DateRange) => Promise<T>
+
+  function createRequestFunc<TResult>(resource: string, transformer: (jsonObject: any) => TResult): RequestFunc<TResult> {
     return (dateRange?: EventApi.DateRange) => request(resource, dateRange, transformer);
   }
 
-  function createCollectionRequestFunc<TSingleResult>(resource: string, transformer: (jsonObject: any) => TSingleResult): (dateRange?: EventApi.DateRange) => Promise<Array<TSingleResult>> {
+  function createCollectionRequestFunc<TSingleResult>(resource: string, transformer: (jsonObject: any) => TSingleResult): RequestFunc<TSingleResult> {
     return createRequestFunc<Array<TSingleResult>>(resource, (result: any) => result.map(transformer));
   }
 
@@ -231,11 +233,11 @@ function mapParticipantPayment(result: Json.OsallistujaMaksu) {
   };
 }
 
-function mapParticipantPaymentStatus(result: Json.OsallistujatMaksunTila) {
+function mapParticipantPaymentStatus(result: Json.OsallistujatMaksunTila): EventApi.PaymentStatus<EventApi.Participant> {
   return {
     for: result.OsallistuminenId,
-    billed: result.Laskutettu && new Date(result.Laskutettu),
-    paid: result.Maksettu && new Date(result.Maksettu),
+    billed: result.Laskutettu ? new Date(result.Laskutettu) : undefined,
+    paid: result.Maksettu ? new Date(result.Maksettu) : undefined,
   };
 }
 
