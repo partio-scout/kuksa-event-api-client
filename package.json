@@ -16,7 +16,7 @@
     "superagent-proxy": "^1.0.3"
   },
   "devDependencies": {
-    "typescript": "^1.8.10"
+    "typescript": "^3.5.3"
   },
   "files": [
     "dist"
