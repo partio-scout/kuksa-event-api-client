@@ -33,7 +33,12 @@ export function getEventApi(configuration: EventApi.EventApiConfiguration): Even
   }
 
   function createCollectionRequestFunc<TSingleResult>(resource: string, transformer: (jsonObject: any) => TSingleResult): (dateRange?: EventApi.DateRange) => Promise<Array<TSingleResult>> {
-    return createRequestFunc<Array<TSingleResult>>(resource, (result: any) => result.map(transformer));
+    return createRequestFunc<Array<TSingleResult>>(resource, (result: any) => {
+      if (typeof result !== 'array') {
+        throw new Error(`Expected result to be an array, got: ${result}`);
+      }
+      return result.map(transformer);
+    });
   }
 
   return {
