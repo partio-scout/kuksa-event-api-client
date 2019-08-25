@@ -39,28 +39,28 @@ export function getEventApi(configuration: EventApi.EventApiConfiguration): Even
   }
 
   return {
-    getEventInfo: createRequestFunc<EventApi.EventInfo>('Tapahtuma', mapEventInfo),
-    getSubCamps: createCollectionRequestFunc<EventApi.SubCamp>('TapahtumaAlaleirit', mapSubCamp),
-    getVillages: createCollectionRequestFunc<EventApi.Village>('TapahtumaKylat', mapVillage),
-    getQuestionSeries: createCollectionRequestFunc<EventApi.QuestionSeries>('TapahtumaKysymyssarjat', mapQuestionSeries),
-    getExtraInfoFields: createCollectionRequestFunc<EventApi.ExtraInfoField>('TapahtumaLisatietokentat', mapExtraInfoField),
-    getExtraSelectionGroups: createCollectionRequestFunc<EventApi.ExtraSelectionGroup>('TapahtumaLisavalinnanPaaryhmat', mapExtraSelectionGroup),
-    getExtraSelections: createCollectionRequestFunc<EventApi.ExtraSelection>('TapahtumaLisavalinnat', mapExtraSelection),
-    getPaymentGroups: createCollectionRequestFunc<EventApi.PaymentGroup>('TapahtumaMaksunPaaryhmat', mapPaymentGroup),
-    getPayments: createCollectionRequestFunc<EventApi.Payment>('TapahtumaMaksut', mapPayment),
-    getCampGroups: createCollectionRequestFunc<EventApi.CampGroup>('Leirilippukunnat', mapCampGroup),
-    getCampGroupExtraInfos: createCollectionRequestFunc<EventApi.ExtraInfo<EventApi.CampGroup>>('LeirilippukunnatLisatietokentat', mapCampGroupExtraInfo),
-    getCampGroupExtraSelections: createCollectionRequestFunc<EventApi.IdMapping<EventApi.CampGroup, EventApi.ExtraSelection>>('LeirilippukunnatLisavalinnat', mapCampGroupExtraSelection),
-    getCampGroupPayments: createCollectionRequestFunc<EventApi.IdMapping<EventApi.CampGroup, EventApi.Payment>>('LeirilippukunnatMaksut', mapCampGroupPayment),
-    getParticipants: createCollectionRequestFunc<EventApi.Participant>('Osallistujat', mapParticipant),
-    getParticipantExtraInfos: createCollectionRequestFunc<EventApi.ExtraInfo<EventApi.Participant>>('OsallistujatLisatietokentat', mapParticipantExtraInfo),
-    getParticipantExtraSelections: createCollectionRequestFunc<EventApi.IdMapping<EventApi.Participant, EventApi.ExtraSelection>>('OsallistujatLisavalinnat', mapParticipantExtraSelection),
-    getParticipantPayments: createCollectionRequestFunc<EventApi.IdMapping<EventApi.Participant, EventApi.Payment>>('OsallistujatMaksut', mapParticipantPayment),
-    getParticipantPaymentStatus: createCollectionRequestFunc<EventApi.PaymentStatus<EventApi.Participant>>('OsallistujatMaksunTila', mapParticipantPaymentStatus),
-    getLocalGroups: createCollectionRequestFunc<EventApi.LocalGroup>('Ryhmat', mapLocalGroup),
-    getLocalGroupExtraInfos: createCollectionRequestFunc<EventApi.ExtraInfo<EventApi.LocalGroup>>('RyhmatLisatietokentat', mapLocalGroupExtraInfo),
-    getLocalGroupExtraSelections: createCollectionRequestFunc<EventApi.IdMapping<EventApi.LocalGroup, EventApi.ExtraSelection>>('RyhmatLisavalinnat', mapLocalGroupExtraSelection),
-    getLocalGroupPayments: createCollectionRequestFunc<EventApi.IdMapping<EventApi.LocalGroup, EventApi.Payment>>('RyhmatMaksut', mapLocalGroupPayment),
+    getEventInfo: createRequestFunc('Tapahtuma', mapEventInfo),
+    getSubCamps: createCollectionRequestFunc('TapahtumaAlaleirit', mapSubCamp),
+    getVillages: createCollectionRequestFunc('TapahtumaKylat', mapVillage),
+    getQuestionSeries: createCollectionRequestFunc('TapahtumaKysymyssarjat', mapQuestionSeries),
+    getExtraInfoFields: createCollectionRequestFunc('TapahtumaLisatietokentat', mapExtraInfoField),
+    getExtraSelectionGroups: createCollectionRequestFunc('TapahtumaLisavalinnanPaaryhmat', mapExtraSelectionGroup),
+    getExtraSelections: createCollectionRequestFunc('TapahtumaLisavalinnat', mapExtraSelection),
+    getPaymentGroups: createCollectionRequestFunc('TapahtumaMaksunPaaryhmat', mapPaymentGroup),
+    getPayments: createCollectionRequestFunc('TapahtumaMaksut', mapPayment),
+    getCampGroups: createCollectionRequestFunc('Leirilippukunnat', mapCampGroup),
+    getCampGroupExtraInfos: createCollectionRequestFunc('LeirilippukunnatLisatietokentat', mapCampGroupExtraInfo),
+    getCampGroupExtraSelections: createCollectionRequestFunc('LeirilippukunnatLisavalinnat', mapCampGroupExtraSelection),
+    getCampGroupPayments: createCollectionRequestFunc('LeirilippukunnatMaksut', mapCampGroupPayment),
+    getParticipants: createCollectionRequestFunc('Osallistujat', mapParticipant),
+    getParticipantExtraInfos: createCollectionRequestFunc('OsallistujatLisatietokentat', mapParticipantExtraInfo),
+    getParticipantExtraSelections: createCollectionRequestFunc('OsallistujatLisavalinnat', mapParticipantExtraSelection),
+    getParticipantPayments: createCollectionRequestFunc('OsallistujatMaksut', mapParticipantPayment),
+    getParticipantPaymentStatus: createCollectionRequestFunc('OsallistujatMaksunTila', mapParticipantPaymentStatus),
+    getLocalGroups: createCollectionRequestFunc('Ryhmat', mapLocalGroup),
+    getLocalGroupExtraInfos: createCollectionRequestFunc('RyhmatLisatietokentat', mapLocalGroupExtraInfo),
+    getLocalGroupExtraSelections: createCollectionRequestFunc('RyhmatLisavalinnat', mapLocalGroupExtraSelection),
+    getLocalGroupPayments: createCollectionRequestFunc('RyhmatMaksut', mapLocalGroupPayment),
   };
 }
 
@@ -72,7 +72,7 @@ function getName(jsonObject: Json.LokalisoidullaNimella): EventApi.LocalizedStri
   };
 }
 
-function mapEventInfo(result: Json.TapahtumaTiedot) {
+function mapEventInfo(result: Json.TapahtumaTiedot): EventApi.EventInfo {
   return {
     startDate: new Date(result.Alkupvm),
     endDate: new Date(result.Loppupvm),
@@ -80,14 +80,14 @@ function mapEventInfo(result: Json.TapahtumaTiedot) {
   };
 }
 
-function mapSubCamp(result: Json.TapahtumaAlaleiri) {
+function mapSubCamp(result: Json.TapahtumaAlaleiri): EventApi.SubCamp {
   return {
     id: result.Id,
     name: result.Nimi,
   };
 }
 
-function mapVillage(result: Json.TapahtumaKyla) {
+function mapVillage(result: Json.TapahtumaKyla): EventApi.Village {
   return {
     id: result.Id,
     subCamp: result.AlaleiriId,
@@ -95,22 +95,14 @@ function mapVillage(result: Json.TapahtumaKyla) {
   };
 }
 
-function mapQuestionSeries(result: Json.TapahtumaKysymyssarja) {
+function mapQuestionSeries(result: Json.TapahtumaKysymyssarja): EventApi.QuestionSeries{
   return {
     id: result.Id,
     name: getName(result),
   };
 }
 
-function mapExtraInfoField(result: Json.TapahtumaLisatietokentta) {
-  return {
-    id: result.Id,
-    questionSeries: result.KysymyssarjaId,
-    name: getName(result),
-  };
-}
-
-function mapExtraSelectionGroup(result: Json.TapahtumaLisavalinnanPaaryhma) {
+function mapExtraInfoField(result: Json.TapahtumaLisatietokentta): EventApi.ExtraInfoField {
   return {
     id: result.Id,
     questionSeries: result.KysymyssarjaId,
@@ -118,7 +110,15 @@ function mapExtraSelectionGroup(result: Json.TapahtumaLisavalinnanPaaryhma) {
   };
 }
 
-function mapExtraSelection(result: Json.TapahtumaLisavalinta) {
+function mapExtraSelectionGroup(result: Json.TapahtumaLisavalinnanPaaryhma): EventApi.ExtraSelectionGroup {
+  return {
+    id: result.Id,
+    questionSeries: result.KysymyssarjaId,
+    name: getName(result),
+  };
+}
+
+function mapExtraSelection(result: Json.TapahtumaLisavalinta): EventApi.ExtraSelection {
   return {
     id: result.Id,
     extraSelectionGroup: result.PaaryhmaId,
@@ -126,14 +126,14 @@ function mapExtraSelection(result: Json.TapahtumaLisavalinta) {
   };
 }
 
-function mapPaymentGroup(result: Json.TapahtumaMaksunPaaryhma) {
+function mapPaymentGroup(result: Json.TapahtumaMaksunPaaryhma): EventApi.PaymentGroup {
   return {
     id: result.Id,
     name: getName(result),
   };
 }
 
-function mapPayment(result: Json.TapahtumaMaksu) {
+function mapPayment(result: Json.TapahtumaMaksu): EventApi.Payment {
   return {
     id: result.Id,
     paymentGroup: result.PaaryhmaId,
@@ -141,7 +141,7 @@ function mapPayment(result: Json.TapahtumaMaksu) {
   };
 }
 
-function mapCampGroup(result: Json.Leirilippukunta) {
+function mapCampGroup(result: Json.Leirilippukunta): EventApi.CampGroup {
   return {
     id: result.Id,
     subCamp: result.AlaleiriId,
@@ -150,7 +150,7 @@ function mapCampGroup(result: Json.Leirilippukunta) {
   };
 }
 
-function mapCampGroupExtraInfo(result: Json.LeirilippukuntaLisatietokentta) {
+function mapCampGroupExtraInfo(result: Json.LeirilippukuntaLisatietokentta): EventApi.ExtraInfo<EventApi.CampGroup> {
   return {
     for: result.LeirilippukuntaId,
     extraInfoField: result.LisatietokenttaId,
@@ -158,21 +158,21 @@ function mapCampGroupExtraInfo(result: Json.LeirilippukuntaLisatietokentta) {
   };
 }
 
-function mapCampGroupExtraSelection(result: Json.LeirilippukuntaLisavalinta) {
+function mapCampGroupExtraSelection(result: Json.LeirilippukuntaLisavalinta): EventApi.IdMapping<EventApi.CampGroup, EventApi.ExtraSelection> {
   return {
     from: result.LeirilippukuntaId,
     to: result.LisavalintaId,
   };
 }
 
-function mapCampGroupPayment(result: Json.LeirilippukuntaMaksu) {
+function mapCampGroupPayment(result: Json.LeirilippukuntaMaksu): EventApi.IdMapping<EventApi.CampGroup, EventApi.Payment> {
   return {
     from: result.LeirilippukuntaId,
     to: result.MaksuId,
   };
 }
 
-function mapParticipant(result: Json.Osallistuja) {
+function mapParticipant(result: Json.Osallistuja): EventApi.Participant {
   return {
     id: result.Id,
     memberNumber: result.Jasennro,
@@ -211,7 +211,7 @@ function mapParticipant(result: Json.Osallistuja) {
   };
 }
 
-function mapParticipantExtraInfo(result: Json.OsallistujaLisatietokentta) {
+function mapParticipantExtraInfo(result: Json.OsallistujaLisatietokentta): EventApi.ExtraInfo<EventApi.Participant> {
   return {
     for: result.OsallistujaId,
     extraInfoField: result.LisatietokenttaId,
@@ -219,14 +219,14 @@ function mapParticipantExtraInfo(result: Json.OsallistujaLisatietokentta) {
   };
 }
 
-function mapParticipantExtraSelection(result: Json.OsallistujaLisavalinta) {
+function mapParticipantExtraSelection(result: Json.OsallistujaLisavalinta): EventApi.IdMapping<EventApi.Participant, EventApi.ExtraSelection> {
   return {
     from: result.OsallistujaId,
     to: result.LisavalintaId,
   };
 }
 
-function mapParticipantPayment(result: Json.OsallistujaMaksu) {
+function mapParticipantPayment(result: Json.OsallistujaMaksu): EventApi.IdMapping<EventApi.Participant, EventApi.Payment> {
   return {
     from: result.OsallistujaId,
     to: result. MaksuId,
@@ -241,7 +241,7 @@ function mapParticipantPaymentStatus(result: Json.OsallistujatMaksunTila): Event
   };
 }
 
-function mapLocalGroup(result: Json.Ryhma) {
+function mapLocalGroup(result: Json.Ryhma): EventApi.LocalGroup {
   return {
     id: result.Id,
     subCamp: result.AlaleiriId,
@@ -255,7 +255,7 @@ function mapLocalGroup(result: Json.Ryhma) {
   };
 }
 
-function mapLocalGroupExtraInfo(result: Json.RyhmaLisatietokentta) {
+function mapLocalGroupExtraInfo(result: Json.RyhmaLisatietokentta): EventApi.ExtraInfo<EventApi.LocalGroup> {
   return {
     for: result.RyhmaId,
     extraInfoField: result.LisatietokenttaId,
@@ -263,14 +263,14 @@ function mapLocalGroupExtraInfo(result: Json.RyhmaLisatietokentta) {
   };
 }
 
-function mapLocalGroupExtraSelection(result: Json.RyhmaLisavalinta) {
+function mapLocalGroupExtraSelection(result: Json.RyhmaLisavalinta): EventApi.IdMapping<EventApi.LocalGroup, EventApi.ExtraSelection> {
   return {
     from: result.RyhmaId,
     to: result.LisavalintaId,
   };
 }
 
-function mapLocalGroupPayment(result: Json.RyhmaMaksu) {
+function mapLocalGroupPayment(result: Json.RyhmaMaksu): EventApi.IdMapping<EventApi.LocalGroup, EventApi.Payment> {
   return {
     from: result.RyhmaId,
     to: result. MaksuId,
