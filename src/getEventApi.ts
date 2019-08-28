@@ -2,73 +2,82 @@ import { request as superagent } from './superagent';
 import { Promise } from './promise';
 import * as Json from './json';
 import * as EventApi from './eventApi';
+import * as R from 'runtypes'
+
+const optionalDateRange = EventApi.DateRange.Or(R.Undefined);
+type RequestFunc<T> = (dateRange?: EventApi.DateRange) => Promise<T>
 
 export function getEventApi(configuration: EventApi.EventApiConfiguration): EventApi.EventApi {
-  function request<TResult>(resource: string, dateRange: EventApi.DateRange | undefined, transformer: (jsonObject: any) => TResult): Promise<TResult> {
-    let baseRequest = superagent.get(`${configuration.endpoint}/${resource}`)
-      .auth(configuration.username, configuration.password)
-      .accept('application/json')
-      .query({ Guid: configuration.eventId });
+  EventApi.EventApiConfiguration.check(configuration)
 
-    if (dateRange) {
-      baseRequest = baseRequest.query({ Alkupvm: dateRange.startDate, Loppupvm: dateRange.endDate });
+  function createRequestFunc<TInput, TResult>(resource: string, runtype: R.Runtype<TInput>, transformer: (jsonObject: TInput) => TResult): RequestFunc<TResult> {
+    return (dateRange?: EventApi.DateRange) => {
+      optionalDateRange.check(dateRange);
+      console.log('Fetching resource', resource)
+
+      let baseRequest = superagent.get(`${configuration.endpoint}/${resource}`)
+        .auth(configuration.username, configuration.password)
+        .accept('application/json')
+        .query({ Guid: configuration.eventId });
+
+      if (dateRange) {
+        baseRequest = baseRequest.query({ Alkupvm: dateRange.startDate, Loppupvm: dateRange.endDate });
+      }
+
+      if (configuration.proxy) {
+        baseRequest = baseRequest.proxy(configuration.proxy);
+      }
+
+      return baseRequest
+        .then((response: any) => {
+          if (!response.ok) {
+            throw new Error('The request failed');
+          }
+          try {
+            return runtype.check(response.body);
+          } catch (err) {
+            throw new Error(`object: ${JSON.stringify(response.body)}, Validation error: ${JSON.stringify(err)}`);
+          }
+        })
+        .then(transformer);
     }
-
-    if (configuration.proxy) {
-      baseRequest = baseRequest.proxy(configuration.proxy);
-    }
-
-    return baseRequest
-      .then((response: any) => {
-        if (!response.ok) {
-          throw new Error('The request failed');
-        }
-        return response;
-      })
-      .then((response: any) => transformer(response.body));
   }
 
-  type RequestFunc<T> = (dateRange?: EventApi.DateRange) => Promise<T>
-
-  function createRequestFunc<TResult>(resource: string, transformer: (jsonObject: any) => TResult): RequestFunc<TResult> {
-    return (dateRange?: EventApi.DateRange) => request(resource, dateRange, transformer);
-  }
-
-  function createCollectionRequestFunc<TSingleResult>(resource: string, transformer: (jsonObject: any) => TSingleResult): RequestFunc<TSingleResult> {
-    return createRequestFunc<Array<TSingleResult>>(resource, (result: any) => result.map(transformer));
+  function createCollectionRequestFunc<TSingleInput, TSingleResult>(resource: string, runtype: R.Runtype<TSingleInput>, transformer: (jsonObject: any) => TSingleResult): RequestFunc<TSingleResult> {
+    return createRequestFunc<TSingleInput[], TSingleResult[]>(resource, R.Array(runtype), (result: any) => result.map(transformer));
   }
 
   return {
-    getEventInfo: createRequestFunc('Tapahtuma', mapEventInfo),
-    getSubCamps: createCollectionRequestFunc('TapahtumaAlaleirit', mapSubCamp),
-    getVillages: createCollectionRequestFunc('TapahtumaKylat', mapVillage),
-    getQuestionSeries: createCollectionRequestFunc('TapahtumaKysymyssarjat', mapQuestionSeries),
-    getExtraInfoFields: createCollectionRequestFunc('TapahtumaLisatietokentat', mapExtraInfoField),
-    getExtraSelectionGroups: createCollectionRequestFunc('TapahtumaLisavalinnanPaaryhmat', mapExtraSelectionGroup),
-    getExtraSelections: createCollectionRequestFunc('TapahtumaLisavalinnat', mapExtraSelection),
-    getPaymentGroups: createCollectionRequestFunc('TapahtumaMaksunPaaryhmat', mapPaymentGroup),
-    getPayments: createCollectionRequestFunc('TapahtumaMaksut', mapPayment),
-    getCampGroups: createCollectionRequestFunc('Leirilippukunnat', mapCampGroup),
-    getCampGroupExtraInfos: createCollectionRequestFunc('LeirilippukunnatLisatietokentat', mapCampGroupExtraInfo),
-    getCampGroupExtraSelections: createCollectionRequestFunc('LeirilippukunnatLisavalinnat', mapCampGroupExtraSelection),
-    getCampGroupPayments: createCollectionRequestFunc('LeirilippukunnatMaksut', mapCampGroupPayment),
-    getParticipants: createCollectionRequestFunc('Osallistujat', mapParticipant),
-    getParticipantExtraInfos: createCollectionRequestFunc('OsallistujatLisatietokentat', mapParticipantExtraInfo),
-    getParticipantExtraSelections: createCollectionRequestFunc('OsallistujatLisavalinnat', mapParticipantExtraSelection),
-    getParticipantPayments: createCollectionRequestFunc('OsallistujatMaksut', mapParticipantPayment),
-    getParticipantPaymentStatus: createCollectionRequestFunc('OsallistujatMaksunTila', mapParticipantPaymentStatus),
-    getLocalGroups: createCollectionRequestFunc('Ryhmat', mapLocalGroup),
-    getLocalGroupExtraInfos: createCollectionRequestFunc('RyhmatLisatietokentat', mapLocalGroupExtraInfo),
-    getLocalGroupExtraSelections: createCollectionRequestFunc('RyhmatLisavalinnat', mapLocalGroupExtraSelection),
-    getLocalGroupPayments: createCollectionRequestFunc('RyhmatMaksut', mapLocalGroupPayment),
+    getEventInfo: createRequestFunc('Tapahtuma', Json.TapahtumaTiedot, mapEventInfo),
+    getSubCamps: createCollectionRequestFunc('TapahtumaAlaleirit', Json.TapahtumaAlaleiri, mapSubCamp),
+    getVillages: createCollectionRequestFunc('TapahtumaKylat', Json.TapahtumaKyla, mapVillage),
+    getQuestionSeries: createCollectionRequestFunc('TapahtumaKysymyssarjat', Json.TapahtumaKysymyssarja, mapQuestionSeries),
+    getExtraInfoFields: createCollectionRequestFunc('TapahtumaLisatietokentat', Json.TapahtumaLisatietokentta, mapExtraInfoField),
+    getExtraSelectionGroups: createCollectionRequestFunc('TapahtumaLisavalinnanPaaryhmat', Json.TapahtumaLisavalinnanPaaryhma, mapExtraSelectionGroup),
+    getExtraSelections: createCollectionRequestFunc('TapahtumaLisavalinnat', Json.TapahtumaLisavalinta, mapExtraSelection),
+    getPaymentGroups: createCollectionRequestFunc('TapahtumaMaksunPaaryhmat', Json.TapahtumaMaksunPaaryhma, mapPaymentGroup),
+    getPayments: createCollectionRequestFunc('TapahtumaMaksut', Json.TapahtumaMaksu, mapPayment),
+    getCampGroups: createCollectionRequestFunc('Leirilippukunnat', Json.Leirilippukunta, mapCampGroup),
+    getCampGroupExtraInfos: createCollectionRequestFunc('LeirilippukunnatLisatietokentat', Json.LeirilippukuntaLisatietokentta, mapCampGroupExtraInfo),
+    getCampGroupExtraSelections: createCollectionRequestFunc('LeirilippukunnatLisavalinnat', Json.LeirilippukuntaLisavalinta, mapCampGroupExtraSelection),
+    getCampGroupPayments: createCollectionRequestFunc('LeirilippukunnatMaksut', Json.LeirilippukuntaMaksu, mapCampGroupPayment),
+    getParticipants: createCollectionRequestFunc('Osallistujat', Json.Osallistuja, mapParticipant),
+    getParticipantExtraInfos: createCollectionRequestFunc('OsallistujatLisatietokentat', Json.OsallistujaLisatietokentta, mapParticipantExtraInfo),
+    getParticipantExtraSelections: createCollectionRequestFunc('OsallistujatLisavalinnat', Json.OsallistujaLisavalinta, mapParticipantExtraSelection),
+    getParticipantPayments: createCollectionRequestFunc('OsallistujatMaksut', Json.OsallistujaMaksu, mapParticipantPayment),
+    getParticipantPaymentStatus: createCollectionRequestFunc('OsallistujatMaksunTila', Json.OsallistujatMaksunTila, mapParticipantPaymentStatus),
+    getLocalGroups: createCollectionRequestFunc('Ryhmat', Json.Ryhma, mapLocalGroup),
+    getLocalGroupExtraInfos: createCollectionRequestFunc('RyhmatLisatietokentat', Json.RyhmaLisatietokentta, mapLocalGroupExtraInfo),
+    getLocalGroupExtraSelections: createCollectionRequestFunc('RyhmatLisavalinnat', Json.RyhmaLisavalinta, mapLocalGroupExtraSelection),
+    getLocalGroupPayments: createCollectionRequestFunc('RyhmatMaksut', Json.RyhmaMaksu, mapLocalGroupPayment),
   };
 }
 
 function getName(jsonObject: Json.LokalisoidullaNimella): EventApi.LocalizedString {
   return {
     fi: jsonObject.Nimi,
-    se: jsonObject.NimiSE,
-    en: jsonObject.NimiEN,
+    se: jsonObject.NimiSE || undefined,
+    en: jsonObject.NimiEN || undefined,
   };
 }
 
@@ -105,7 +114,7 @@ function mapQuestionSeries(result: Json.TapahtumaKysymyssarja): EventApi.Questio
 function mapExtraInfoField(result: Json.TapahtumaLisatietokentta): EventApi.ExtraInfoField {
   return {
     id: result.Id,
-    questionSeries: result.KysymyssarjaId,
+    questionSeries: result.KysymyssarjaId || undefined,
     name: getName(result),
   };
 }
@@ -113,7 +122,7 @@ function mapExtraInfoField(result: Json.TapahtumaLisatietokentta): EventApi.Extr
 function mapExtraSelectionGroup(result: Json.TapahtumaLisavalinnanPaaryhma): EventApi.ExtraSelectionGroup {
   return {
     id: result.Id,
-    questionSeries: result.KysymyssarjaId,
+    questionSeries: result.KysymyssarjaId || undefined,
     name: getName(result),
   };
 }
@@ -144,8 +153,8 @@ function mapPayment(result: Json.TapahtumaMaksu): EventApi.Payment {
 function mapCampGroup(result: Json.Leirilippukunta): EventApi.CampGroup {
   return {
     id: result.Id,
-    subCamp: result.AlaleiriId,
-    village: result.KylaId,
+    subCamp: result.AlaleiriId || undefined,
+    village: result.KylaId || undefined,
     name: result.Nimi,
   };
 }
@@ -175,39 +184,39 @@ function mapCampGroupPayment(result: Json.LeirilippukuntaMaksu): EventApi.IdMapp
 function mapParticipant(result: Json.Osallistuja): EventApi.Participant {
   return {
     id: result.Id,
-    memberNumber: result.Jasennro,
+    memberNumber: result.Jasennro ? String(result.Jasennro) : undefined,
     firstName: result.Etunimi,
     lastName: result.Sukunimi,
-    nickname: result.Partionimi,
+    nickname: result.Partionimi || undefined,
     address: {
-      street: result.Katuosoite,
-      postCode: result.Postinumero,
-      postOffice: result.Postitoimipaikka,
-      country: result.Postimaa,
-      extra: result.Lisaosoite,
+      street: result.Katuosoite || undefined,
+      postCode: result.Postinumero || undefined,
+      postOffice: result.Postitoimipaikka || undefined,
+      country: result.Postimaa || undefined,
+      extra: result.Lisaosoite || undefined,
     },
-    phoneNumber: result.Puhelinnumero,
-    email: result.Email,
-    diet: result.Erityisruokavalio,
-    birthDate: new Date(result.Syntymaaika),
-    age: result.Ika,
+    phoneNumber: result.Puhelinnumero || undefined,
+    email: result.Email || undefined,
+    diet: result.Erityisruokavalio || undefined,
+    birthDate: result.Syntymaaika ? new Date(result.Syntymaaika) : null,
+    age: result.Ika || undefined,
     signUpDate: new Date(result.Ilmoittautumispvm),
-    representedParty: result.TahoJotaEdustaa,
-    districtOfOrganization: result.EdustusorganisaationPiiri,
-    accommodation: result.Majoittuminen,
-    accommodationWithLocalGroup: result.MajoittuuLippukunnassa,
-    accommodationExtraInfo: result.MajoittumisenLisatiedot,
+    representedParty: result.TahoJotaEdustaa || undefined,
+    districtOfOrganization: result.EdustusorganisaationPiiri || undefined,
+    accommodation: result.Majoittuminen || undefined,
+    accommodationWithLocalGroup: result.MajoittuuLippukunnassa || undefined,
+    accommodationExtraInfo: result.MajoittumisenLisatiedot || undefined,
     guardian: {
-      name: result.HuoltajanNimi,
-      phoneNumber: result.HuoltajanPuhelinnumero,
-      email: result.HuoltajanEmail,
+      name: result.HuoltajanNimi || undefined,
+      phoneNumber: result.HuoltajanPuhelinnumero || undefined,
+      email: result.HuoltajanEmail || undefined,
     },
-    group: result.RyhmaId,
-    subCamp: result.AlaleiriId,
-    village: result.KylaId,
-    campGroup: result.LeirilippukuntaId,
+    group: result.RyhmaId || undefined,
+    subCamp: result.AlaleiriId || undefined,
+    village: result.KylaId || undefined,
+    campGroup: result.LeirilippukuntaId || undefined,
     cancelled: result.Perunut,
-    participationId: result.TapahtumaId,
+    participationId: undefined,
   };
 }
 
@@ -244,9 +253,9 @@ function mapParticipantPaymentStatus(result: Json.OsallistujatMaksunTila): Event
 function mapLocalGroup(result: Json.Ryhma): EventApi.LocalGroup {
   return {
     id: result.Id,
-    subCamp: result.AlaleiriId,
-    village: result.KylaId,
-    campGroup: result.LeirilippukuntaId,
+    subCamp: result.AlaleiriId || undefined,
+    village: result.KylaId || undefined,
+    campGroup: result.LeirilippukuntaId || undefined,
     name: result.Nimi,
     scoutOrganization: result.Partiojarjesto,
     locality: result.Paikkakunta,

@@ -1,4 +1,4 @@
-import { Promise } from './promise';
+import * as R from 'runtypes'
 
 export interface EventApi {
   getEventInfo(dateRange?: DateRange): Promise<EventInfo>;
@@ -25,18 +25,22 @@ export interface EventApi {
   getLocalGroupPayments(dateRange?: DateRange): Promise<Array<IdMapping<LocalGroup, Payment>>>;
 }
 
-export interface EventApiConfiguration {
-  endpoint: string;
-  eventId: string;
-  username: string;
-  password: string;
-  proxy: string;
-}
+export const EventApiConfiguration = R.Record({
+  endpoint: R.String,
+  eventId: R.String,
+  username: R.String,
+  password: R.String,
+  proxy: R.String.Or(R.Undefined),
+})
+export type EventApiConfiguration = R.Static<typeof EventApiConfiguration>
 
-export interface DateRange {
-  startDate: Date;
-  endDate: Date;
-}
+export const IsoDateTimeString = R.String;
+
+export const DateRange = R.Record({
+  startDate: IsoDateTimeString,
+  endDate: IsoDateTimeString,
+})
+export type DateRange = R.Static<typeof DateRange>
 
 export type Id<T> = number;
 
@@ -53,8 +57,8 @@ export interface EventInfo {
 
 export interface LocalizedString {
   fi: string;
-  se: string;
-  en: string;
+  se: string | undefined;
+  en: string | undefined;
 }
 
 export interface SubCamp {
@@ -75,13 +79,13 @@ export interface QuestionSeries {
 
 export interface ExtraInfoField {
   id: Id<ExtraInfoField>;
-  questionSeries: Id<QuestionSeries>;
+  questionSeries: Id<QuestionSeries> | undefined;
   name: LocalizedString;
 }
 
 export interface ExtraSelectionGroup {
   id: Id<ExtraSelectionGroup>;
-  questionSeries: Id<QuestionSeries>;
+  questionSeries: Id<QuestionSeries> | undefined;
   name: LocalizedString;
 }
 
@@ -110,57 +114,57 @@ export interface PaymentStatus<For> {
 
 export interface CampGroup {
   id: Id<CampGroup>;
-  subCamp: Id<SubCamp>;
-  village: Id<Village>;
+  subCamp: Id<SubCamp> | undefined;
+  village: Id<Village> | undefined;
   name: string;
 }
 
 export interface Participant {
   id: Id<Participant>;
-  memberNumber: string;
+  memberNumber: string | undefined;
   firstName: string;
   lastName: string;
-  nickname: string;
+  nickname: string | undefined;
   address: Address;
-  phoneNumber: string;
-  email: string;
-  diet: string;
-  birthDate: Date;
-  age: number;
+  phoneNumber: string | undefined;
+  email: string | undefined;
+  diet: string | undefined;
+  birthDate: Date | null;
+  age: number | undefined;
   signUpDate: Date;
-  representedParty: string;
-  districtOfOrganization: string;
-  accommodation: string;
-  accommodationWithLocalGroup: string;
-  accommodationExtraInfo: string;
+  representedParty: string | undefined;
+  districtOfOrganization: string | undefined;
+  accommodation: string | undefined;
+  accommodationWithLocalGroup: string | undefined;
+  accommodationExtraInfo: string | undefined;
   guardian: Guardian;
-  group: Id<LocalGroup>;
-  subCamp: Id<SubCamp>;
-  village: Id<Village>;
-  campGroup: Id<CampGroup>;
+  group: Id<LocalGroup> | undefined;
+  subCamp: Id<SubCamp> | undefined;
+  village: Id<Village> | undefined;
+  campGroup: Id<CampGroup> | undefined;
   cancelled: boolean;
-  participationId: number;
+  participationId: number | undefined;
 }
 
 export interface Address {
-  street: string;
-  postCode: string;
-  postOffice: string;
-  country: string;
-  extra: string;
+  street: string | undefined;
+  postCode: string | undefined;
+  postOffice: string | undefined;
+  country: string | undefined;
+  extra: string | undefined;
 }
 
 export interface Guardian {
-  name: string;
-  phoneNumber: string;
-  email: string;
+  name: string | undefined;
+  phoneNumber: string | undefined;
+  email: string | undefined;
 }
 
 export interface LocalGroup {
   id: Id<LocalGroup>;
-  subCamp: Id<SubCamp>;
-  village: Id<Village>;
-  campGroup: Id<CampGroup>;
+  subCamp: Id<SubCamp> | undefined;
+  village: Id<Village> | undefined;
+  campGroup: Id<CampGroup> | undefined;
   name: string;
   scoutOrganization: string;
   locality: string;
