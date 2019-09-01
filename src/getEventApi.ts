@@ -1,5 +1,4 @@
 import { request as superagent } from './superagent';
-import { Promise } from './promise';
 import * as Json from './json';
 import * as EventApi from './eventApi';
 import * as R from 'runtypes'
@@ -43,7 +42,7 @@ export function getEventApi(configuration: EventApi.EventApiConfiguration): Even
     }
   }
 
-  function createCollectionRequestFunc<TSingleInput, TSingleResult>(resource: string, runtype: R.Runtype<TSingleInput>, transformer: (jsonObject: any) => TSingleResult): RequestFunc<TSingleResult> {
+  function createCollectionRequestFunc<TSingleInput, TSingleResult>(resource: string, runtype: R.Runtype<TSingleInput>, transformer: (jsonObject: any) => TSingleResult): RequestFunc<TSingleResult[]> {
     return createRequestFunc<TSingleInput[], TSingleResult[]>(resource, R.Array(runtype), (result: any) => result.map(transformer));
   }
 

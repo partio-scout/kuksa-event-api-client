@@ -18,7 +18,7 @@ export interface EventApi {
   getParticipantExtraInfos(dateRange?: DateRange): Promise<Array<ExtraInfo<Participant>>>;
   getParticipantExtraSelections(dateRange?: DateRange): Promise<Array<IdMapping<Participant, ExtraSelection>>>
   getParticipantPayments(dateRange?: DateRange): Promise<Array<IdMapping<Participant, Payment>>>;
-  getParticipantPaymentStatus(dateRange?: DateRange): Promise<PaymentStatus<Participant>>;
+  getParticipantPaymentStatus(dateRange?: DateRange): Promise<Array<PaymentStatus<Participant>>>;
   getLocalGroups(dateRange?: DateRange): Promise<Array<LocalGroup>>;
   getLocalGroupExtraInfos(dateRange?: DateRange): Promise<Array<ExtraInfo<LocalGroup>>>;
   getLocalGroupExtraSelections(dateRange?: DateRange): Promise<Array<IdMapping<LocalGroup, ExtraSelection>>>
