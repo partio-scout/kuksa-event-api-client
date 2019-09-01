@@ -1,41 +1,57 @@
-import { request as superagent } from './superagent';
 import * as Json from './json';
 import * as EventApi from './eventApi';
 import * as R from 'runtypes'
+import fetch from 'node-fetch';
+import ProxyAgent = require('proxy-agent');
 
 const optionalDateRange = EventApi.DateRange.Or(R.Undefined);
 type RequestFunc<T> = (dateRange?: EventApi.DateRange) => Promise<T>
 
 export function getEventApi(configuration: EventApi.EventApiConfiguration): EventApi.EventApi {
   EventApi.EventApiConfiguration.check(configuration)
+  const baseUrl = new URL(normalizeBaseUrl(configuration.endpoint));
 
   function createRequestFunc<TInput, TResult>(resource: string, runtype: R.Runtype<TInput>, transformer: (jsonObject: TInput) => TResult): RequestFunc<TResult> {
+    const requestUrl = new URL(resource, baseUrl);
+    requestUrl.searchParams.set('Guid', configuration.eventId);
+
+    const config = {
+      headers: {
+        Accept: 'application/json',
+        Authorization: basicAuthHeader(configuration.username, configuration.password),
+      },
+      agent: configuration.proxy ? new ProxyAgent(configuration.proxy) as any : undefined,
+    };
+
+    function formatUrl(dateRange: EventApi.DateRange | undefined): string {
+      if (!dateRange) {
+        return requestUrl.href;
+      }
+
+      const url = new URL(requestUrl.href);
+      url.searchParams.set('Alkupvm', dateRange.startDate);
+      url.searchParams.set('Loppupvm', dateRange.endDate);
+      return url.href;
+    }
+
     return (dateRange?: EventApi.DateRange) => {
       optionalDateRange.check(dateRange);
-      console.log('Fetching resource', resource)
 
-      let baseRequest = superagent.get(`${configuration.endpoint}/${resource}`)
-        .auth(configuration.username, configuration.password)
-        .accept('application/json')
-        .query({ Guid: configuration.eventId });
-
-      if (dateRange) {
-        baseRequest = baseRequest.query({ Alkupvm: dateRange.startDate, Loppupvm: dateRange.endDate });
-      }
-
-      if (configuration.proxy) {
-        baseRequest = baseRequest.proxy(configuration.proxy);
-      }
-
-      return baseRequest
-        .then((response: any) => {
+      return fetch(formatUrl(dateRange), config)
+        .then((response) => {
           if (!response.ok) {
-            throw new Error('The request failed');
+            return response.text().then((body) => {
+              throw new Error(`The request failed: ${body}`);
+            })
           }
+
+          return response.json();
+        })
+        .then((body) => {
           try {
-            return runtype.check(response.body);
+            return runtype.check(body);
           } catch (err) {
-            throw new Error(`object: ${JSON.stringify(response.body)}, Validation error: ${JSON.stringify(err)}`);
+            throw new Error(`object: ${JSON.stringify(body)}, Validation error: ${JSON.stringify(err)}`);
           }
         })
         .then(transformer);
@@ -283,4 +299,15 @@ function mapLocalGroupPayment(result: Json.RyhmaMaksu): EventApi.IdMapping<Event
     from: result.RyhmaId,
     to: result. MaksuId,
   };
+}
+
+function normalizeBaseUrl(endpoint: string): string {
+  return endpoint.endsWith('/') ? endpoint : endpoint + '/'
+}
+
+function basicAuthHeader(username: string, password: string) {
+  return [
+    'Basic',
+    new Buffer([username, password].join(':')).toString('base64'),
+  ].join(' ');
 }

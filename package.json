@@ -12,11 +12,12 @@
     "postversion": "rm -rf release && git push && git push --tags"
   },
   "dependencies": {
-    "runtypes": "^4.0.1",
-    "superagent": "^3.8.3",
-    "superagent-proxy": "^1.0.3"
+    "node-fetch": "^2.6.0",
+    "proxy-agent": "^3.1.0",
+    "runtypes": "^4.0.1"
   },
   "devDependencies": {
+    "@types/node-fetch": "^2.5.0",
     "typescript": "^3.5.3"
   },
   "files": [
