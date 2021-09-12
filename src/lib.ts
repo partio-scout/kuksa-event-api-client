@@ -1,2 +1,2 @@
-export { getEventApi } from './getEventApi';
-export * from './eventApi';
+export { getEventApi } from './getEventApi'
+export * from './eventApi'

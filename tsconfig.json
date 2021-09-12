@@ -11,7 +11,5 @@
     "strict": true,
     "esModuleInterop": true
   },
-  "files": [
-    "src/lib.ts"
-  ]
+  "files": ["src/lib.ts"]
 }

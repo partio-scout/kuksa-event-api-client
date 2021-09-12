@@ -13,13 +13,17 @@ export const LeirilippukuntaLisatietokentta = R.Record({
   LisatietokenttaId: R.Number,
   Lisatiedot: R.String,
 })
-export type LeirilippukuntaLisatietokentta = R.Static<typeof LeirilippukuntaLisatietokentta>
+export type LeirilippukuntaLisatietokentta = R.Static<
+  typeof LeirilippukuntaLisatietokentta
+>
 
 export const LeirilippukuntaLisavalinta = R.Record({
   LeirilippukuntaId: R.Number,
   LisavalintaId: R.Number,
 })
-export type LeirilippukuntaLisavalinta = R.Static<typeof LeirilippukuntaLisavalinta>
+export type LeirilippukuntaLisavalinta = R.Static<
+  typeof LeirilippukuntaLisavalinta
+>
 
 export const LeirilippukuntaMaksu = R.Record({
   LeirilippukuntaId: R.Number,
@@ -27,11 +31,15 @@ export const LeirilippukuntaMaksu = R.Record({
 })
 export type LeirilippukuntaMaksu = R.Static<typeof LeirilippukuntaMaksu>
 
-const isoDateRegex = /^(\d{4})-(\d{2})-(\d{2})$/;
+const isoDateRegex = /^(\d{4})-(\d{2})-(\d{2})$/
 const isoDateTimeRegex = /^(\d{4})-(\d{2})-(\d{2}(T\d{2}:\d{2}:\d{2})?)$/
 
-export const IsoDateString = R.String.withConstraint(x => isoDateRegex.test(x))
-export const IsoDateTimeString = R.String.withConstraint(x => isoDateTimeRegex.test(x))
+export const IsoDateString = R.String.withConstraint((x) =>
+  isoDateRegex.test(x),
+)
+export const IsoDateTimeString = R.String.withConstraint((x) =>
+  isoDateTimeRegex.test(x),
+)
 
 export const Osallistuja = R.Record({
   Id: R.Number,
@@ -71,7 +79,9 @@ export const OsallistujaLisatietokentta = R.Record({
   LisatietokenttaId: R.Number,
   Lisatiedot: R.String,
 })
-export type OsallistujaLisatietokentta = R.Static<typeof OsallistujaLisatietokentta>
+export type OsallistujaLisatietokentta = R.Static<
+  typeof OsallistujaLisatietokentta
+>
 
 export const OsallistujaLisavalinta = R.Record({
   OsallistujaId: R.Number,
@@ -132,10 +142,12 @@ export const LokalisoidullaNimella = R.Record({
 })
 export type LokalisoidullaNimella = R.Static<typeof LokalisoidullaNimella>
 
-export const TapahtumaTiedot = LokalisoidullaNimella.And(R.Record({
-  Alkupvm: R.String,
-  Loppupvm: R.String,
-}))
+export const TapahtumaTiedot = LokalisoidullaNimella.And(
+  R.Record({
+    Alkupvm: R.String,
+    Loppupvm: R.String,
+  }),
+)
 export type TapahtumaTiedot = R.Static<typeof TapahtumaTiedot>
 
 export const TapahtumaAlaleiri = R.Record({
@@ -151,36 +163,50 @@ export const TapahtumaKyla = R.Record({
 })
 export type TapahtumaKyla = R.Static<typeof TapahtumaKyla>
 
-export const TapahtumaKysymyssarja = LokalisoidullaNimella.And(R.Record({
-  Id: R.Number,
-}))
+export const TapahtumaKysymyssarja = LokalisoidullaNimella.And(
+  R.Record({
+    Id: R.Number,
+  }),
+)
 export type TapahtumaKysymyssarja = R.Static<typeof TapahtumaKysymyssarja>
 
-export const TapahtumaLisatietokentta = LokalisoidullaNimella.And(R.Record({
-  Id: R.Number,
-  KysymyssarjaId: R.Number.Or(R.Null),
-}))
+export const TapahtumaLisatietokentta = LokalisoidullaNimella.And(
+  R.Record({
+    Id: R.Number,
+    KysymyssarjaId: R.Number.Or(R.Null),
+  }),
+)
 export type TapahtumaLisatietokentta = R.Static<typeof TapahtumaLisatietokentta>
 
-export const TapahtumaLisavalinnanPaaryhma = LokalisoidullaNimella.And(R.Record({
-  Id: R.Number,
-  KysymyssarjaId: R.Number.Or(R.Null),
-}))
-export type TapahtumaLisavalinnanPaaryhma = R.Static<typeof TapahtumaLisavalinnanPaaryhma>
+export const TapahtumaLisavalinnanPaaryhma = LokalisoidullaNimella.And(
+  R.Record({
+    Id: R.Number,
+    KysymyssarjaId: R.Number.Or(R.Null),
+  }),
+)
+export type TapahtumaLisavalinnanPaaryhma = R.Static<
+  typeof TapahtumaLisavalinnanPaaryhma
+>
 
-export const TapahtumaLisavalinta = LokalisoidullaNimella.And(R.Record({
-  Id: R.Number,
-  PaaryhmaId: R.Number,
-}))
+export const TapahtumaLisavalinta = LokalisoidullaNimella.And(
+  R.Record({
+    Id: R.Number,
+    PaaryhmaId: R.Number,
+  }),
+)
 export type TapahtumaLisavalinta = R.Static<typeof TapahtumaLisavalinta>
 
-export const TapahtumaMaksunPaaryhma = LokalisoidullaNimella.And(R.Record({
-  Id: R.Number,
-}))
+export const TapahtumaMaksunPaaryhma = LokalisoidullaNimella.And(
+  R.Record({
+    Id: R.Number,
+  }),
+)
 export type TapahtumaMaksunPaaryhma = R.Static<typeof TapahtumaMaksunPaaryhma>
 
-export const TapahtumaMaksu = LokalisoidullaNimella.And(R.Record({
-  Id: R.Number,
-  PaaryhmaId: R.Number,
-}))
+export const TapahtumaMaksu = LokalisoidullaNimella.And(
+  R.Record({
+    Id: R.Number,
+    PaaryhmaId: R.Number,
+  }),
+)
 export type TapahtumaMaksu = R.Static<typeof TapahtumaMaksu>
