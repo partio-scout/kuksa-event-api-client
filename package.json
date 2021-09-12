@@ -10,7 +10,8 @@
     "preversion": "[[ $(git branch | grep '*' | cut -c 3-) = master ]] && rm -rf release kuksa-event-api-client.tar.gz",
     "version": "npm run build && mkdir release && cp -r dist package.json README.md release/ && tar -cf kuksa-event-api-client.tar.gz release/",
     "postversion": "rm -rf release && git push && git push --tags",
-    "prepare": "git config core.hooksPath .githooks"
+    "prepare": "git config core.hooksPath .githooks",
+    "prettier-write": "prettier --write '**/*.{js,jsx,mjs,ts,tsx,json,md,css,yml,yaml,less,scss}'"
   },
   "dependencies": {
     "node-fetch": "^3.0.0",
