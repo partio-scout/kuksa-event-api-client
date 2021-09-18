@@ -1,50 +1,44 @@
 import * as R from 'runtypes'
 
+export type RequestFunc<T> = (dateRange?: ReadonlyDateRange) => Promise<T>
+
 export interface EventApi {
-  getEventInfo(dateRange?: DateRange): Promise<EventInfo>
-  getSubCamps(dateRange?: DateRange): Promise<Array<SubCamp>>
-  getVillages(dateRange?: DateRange): Promise<Array<Village>>
-  getQuestionSeries(dateRange?: DateRange): Promise<Array<QuestionSeries>>
-  getExtraInfoFields(dateRange?: DateRange): Promise<Array<ExtraInfoField>>
-  getExtraSelectionGroups(
-    dateRange?: DateRange,
-  ): Promise<Array<ExtraSelectionGroup>>
-  getExtraSelections(dateRange?: DateRange): Promise<Array<ExtraSelection>>
-  getPaymentGroups(dateRange?: DateRange): Promise<Array<PaymentGroup>>
-  getPayments(dateRange?: DateRange): Promise<Array<Payment>>
-  getCampGroups(dateRange?: DateRange): Promise<Array<CampGroup>>
-  getCampGroupExtraInfos(
-    dateRange?: DateRange,
-  ): Promise<Array<ExtraInfo<CampGroup>>>
-  getCampGroupExtraSelections(
-    dateRange?: DateRange,
-  ): Promise<Array<IdMapping<CampGroup, ExtraSelection>>>
-  getCampGroupPayments(
-    dateRange?: DateRange,
-  ): Promise<Array<IdMapping<CampGroup, Payment>>>
-  getParticipants(dateRange?: DateRange): Promise<Array<Participant>>
-  getParticipantExtraInfos(
-    dateRange?: DateRange,
-  ): Promise<Array<ExtraInfo<Participant>>>
-  getParticipantExtraSelections(
-    dateRange?: DateRange,
-  ): Promise<Array<IdMapping<Participant, ExtraSelection>>>
-  getParticipantPayments(
-    dateRange?: DateRange,
-  ): Promise<Array<IdMapping<Participant, Payment>>>
-  getParticipantPaymentStatus(
-    dateRange?: DateRange,
-  ): Promise<Array<PaymentStatus<Participant>>>
-  getLocalGroups(dateRange?: DateRange): Promise<Array<LocalGroup>>
-  getLocalGroupExtraInfos(
-    dateRange?: DateRange,
-  ): Promise<Array<ExtraInfo<LocalGroup>>>
-  getLocalGroupExtraSelections(
-    dateRange?: DateRange,
-  ): Promise<Array<IdMapping<LocalGroup, ExtraSelection>>>
-  getLocalGroupPayments(
-    dateRange?: DateRange,
-  ): Promise<Array<IdMapping<LocalGroup, Payment>>>
+  readonly getEventInfo: RequestFunc<EventInfo>
+  readonly getSubCamps: RequestFunc<Array<SubCamp>>
+  readonly getVillages: RequestFunc<Array<Village>>
+  readonly getQuestionSeries: RequestFunc<Array<QuestionSeries>>
+  readonly getExtraInfoFields: RequestFunc<Array<ExtraInfoField>>
+  readonly getExtraSelectionGroups: RequestFunc<Array<ExtraSelectionGroup>>
+  readonly getExtraSelections: RequestFunc<Array<ExtraSelection>>
+  readonly getPaymentGroups: RequestFunc<Array<PaymentGroup>>
+  readonly getPayments: RequestFunc<Array<Payment>>
+  readonly getCampGroups: RequestFunc<Array<CampGroup>>
+  readonly getCampGroupExtraInfos: RequestFunc<Array<ExtraInfo<CampGroup>>>
+  readonly getCampGroupExtraSelections: RequestFunc<
+    Array<IdMapping<CampGroup, ExtraSelection>>
+  >
+  readonly getCampGroupPayments: RequestFunc<
+    Array<IdMapping<CampGroup, Payment>>
+  >
+  readonly getParticipants: RequestFunc<Array<Participant>>
+  readonly getParticipantExtraInfos: RequestFunc<Array<ExtraInfo<Participant>>>
+  readonly getParticipantExtraSelections: RequestFunc<
+    Array<IdMapping<Participant, ExtraSelection>>
+  >
+  readonly getParticipantPayments: RequestFunc<
+    Array<IdMapping<Participant, Payment>>
+  >
+  readonly getParticipantPaymentStatus: RequestFunc<
+    Array<PaymentStatus<Participant>>
+  >
+  readonly getLocalGroups: RequestFunc<Array<LocalGroup>>
+  readonly getLocalGroupExtraInfos: RequestFunc<Array<ExtraInfo<LocalGroup>>>
+  readonly getLocalGroupExtraSelections: RequestFunc<
+    Array<IdMapping<LocalGroup, ExtraSelection>>
+  >
+  readonly getLocalGroupPayments: RequestFunc<
+    Array<IdMapping<LocalGroup, Payment>>
+  >
 }
 
 export const EventApiConfiguration = R.Record({
@@ -53,7 +47,7 @@ export const EventApiConfiguration = R.Record({
   username: R.String,
   password: R.String,
   proxy: R.String.Or(R.Undefined),
-})
+}).asReadonly()
 export type EventApiConfiguration = R.Static<typeof EventApiConfiguration>
 
 export const IsoDateTimeString = R.String
@@ -63,6 +57,9 @@ export const DateRange = R.Record({
   endDate: IsoDateTimeString,
 })
 export type DateRange = R.Static<typeof DateRange>
+
+export const ReadonlyDateRange = DateRange.asReadonly()
+export type ReadonlyDateRange = R.Static<typeof ReadonlyDateRange>
 
 export type Id<T> = number
 

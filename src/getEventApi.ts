@@ -5,71 +5,69 @@ import fetch from 'node-fetch'
 import ProxyAgent = require('proxy-agent')
 
 const optionalDateRange = EventApi.DateRange.Or(R.Undefined)
-type RequestFunc<T> = (dateRange?: EventApi.DateRange) => Promise<T>
 
 export function getEventApi(
   configuration: EventApi.EventApiConfiguration,
 ): EventApi.EventApi {
   EventApi.EventApiConfiguration.check(configuration)
   const baseUrl = new URL(normalizeBaseUrl(configuration.endpoint))
+  const config = {
+    headers: {
+      Accept: 'application/json',
+      Authorization: basicAuthHeader(
+        configuration.username,
+        configuration.password,
+      ),
+    },
+    agent: configuration.proxy
+      ? (new ProxyAgent(configuration.proxy) as any)
+      : undefined,
+  }
+
+  function formatUrl(
+    resource: string,
+    dateRange: EventApi.ReadonlyDateRange | undefined,
+  ): URL {
+    const url = new URL(resource, baseUrl)
+
+    const searchParams = new URLSearchParams({
+      Guid: configuration.eventId,
+    })
+    if (dateRange !== undefined) {
+      searchParams.set('Alkupvm', dateRange.startDate)
+      searchParams.set('Loppupvm', dateRange.endDate)
+    }
+
+    url.search = searchParams.toString()
+
+    return url
+  }
 
   function createRequestFunc<TInput, TResult>(
     resource: string,
     runtype: R.Runtype<TInput>,
     transformer: (jsonObject: TInput) => TResult,
-  ): RequestFunc<TResult> {
-    const requestUrl = new URL(resource, baseUrl)
-    requestUrl.searchParams.set('Guid', configuration.eventId)
-
-    const config = {
-      headers: {
-        Accept: 'application/json',
-        Authorization: basicAuthHeader(
-          configuration.username,
-          configuration.password,
-        ),
-      },
-      agent: configuration.proxy
-        ? (new ProxyAgent(configuration.proxy) as any)
-        : undefined,
-    }
-
-    function formatUrl(dateRange: EventApi.DateRange | undefined): string {
-      if (!dateRange) {
-        return requestUrl.href
-      }
-
-      const url = new URL(requestUrl.href)
-      url.searchParams.set('Alkupvm', dateRange.startDate)
-      url.searchParams.set('Loppupvm', dateRange.endDate)
-      return url.href
-    }
-
-    return (dateRange?: EventApi.DateRange) => {
+  ): EventApi.RequestFunc<TResult> {
+    return async (dateRange) => {
       optionalDateRange.check(dateRange)
 
-      return fetch(formatUrl(dateRange), config)
-        .then((response) => {
-          if (!response.ok) {
-            return response.text().then((body) => {
-              throw new Error(`The request failed: ${body}`)
-            })
-          }
+      const response = await fetch(formatUrl(resource, dateRange).href, config)
+      if (!response.ok) {
+        return response.text().then((body) => {
+          throw new Error(`The request failed: ${body}`)
+        })
+      }
 
-          return response.json()
-        })
-        .then((body) => {
-          try {
-            return runtype.check(body)
-          } catch (err) {
-            throw new Error(
-              `object: ${JSON.stringify(
-                body,
-              )}, Validation error: ${JSON.stringify(err)}`,
-            )
-          }
-        })
-        .then(transformer)
+      const body = await response.json()
+      try {
+        return transformer(runtype.check(body))
+      } catch (err) {
+        throw new Error(
+          `object: ${JSON.stringify(body)}, Validation error: ${JSON.stringify(
+            err,
+          )}`,
+        )
+      }
     }
   }
 
@@ -77,7 +75,7 @@ export function getEventApi(
     resource: string,
     runtype: R.Runtype<TSingleInput>,
     transformer: (jsonObject: any) => TSingleResult,
-  ): RequestFunc<TSingleResult[]> {
+  ): EventApi.RequestFunc<TSingleResult[]> {
     return createRequestFunc<TSingleInput[], TSingleResult[]>(
       resource,
       R.Array(runtype),

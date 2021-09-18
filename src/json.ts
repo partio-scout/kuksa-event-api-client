@@ -5,14 +5,14 @@ export const Leirilippukunta = R.Record({
   AlaleiriId: R.Number.Or(R.Null),
   KylaId: R.Number.Or(R.Null),
   Nimi: R.String,
-})
+}).asReadonly()
 export type Leirilippukunta = R.Static<typeof Leirilippukunta>
 
 export const LeirilippukuntaLisatietokentta = R.Record({
   LeirilippukuntaId: R.Number,
   LisatietokenttaId: R.Number,
   Lisatiedot: R.String,
-})
+}).asReadonly()
 export type LeirilippukuntaLisatietokentta = R.Static<
   typeof LeirilippukuntaLisatietokentta
 >
@@ -20,7 +20,7 @@ export type LeirilippukuntaLisatietokentta = R.Static<
 export const LeirilippukuntaLisavalinta = R.Record({
   LeirilippukuntaId: R.Number,
   LisavalintaId: R.Number,
-})
+}).asReadonly()
 export type LeirilippukuntaLisavalinta = R.Static<
   typeof LeirilippukuntaLisavalinta
 >
@@ -28,7 +28,7 @@ export type LeirilippukuntaLisavalinta = R.Static<
 export const LeirilippukuntaMaksu = R.Record({
   LeirilippukuntaId: R.Number,
   MaksuId: R.Number,
-})
+}).asReadonly()
 export type LeirilippukuntaMaksu = R.Static<typeof LeirilippukuntaMaksu>
 
 const isoDateRegex = /^(\d{4})-(\d{2})-(\d{2})$/
@@ -71,14 +71,14 @@ export const Osallistuja = R.Record({
   KylaId: R.Number.Or(R.Null),
   LeirilippukuntaId: R.Number.Or(R.Null),
   Perunut: R.Boolean,
-})
+}).asReadonly()
 export type Osallistuja = R.Static<typeof Osallistuja>
 
 export const OsallistujaLisatietokentta = R.Record({
   OsallistujaId: R.Number,
   LisatietokenttaId: R.Number,
   Lisatiedot: R.String,
-})
+}).asReadonly()
 export type OsallistujaLisatietokentta = R.Static<
   typeof OsallistujaLisatietokentta
 >
@@ -86,13 +86,13 @@ export type OsallistujaLisatietokentta = R.Static<
 export const OsallistujaLisavalinta = R.Record({
   OsallistujaId: R.Number,
   LisavalintaId: R.Number,
-})
+}).asReadonly()
 export type OsallistujaLisavalinta = R.Static<typeof OsallistujaLisavalinta>
 
 export const OsallistujaMaksu = R.Record({
   OsallistujaId: R.Number,
   MaksuId: R.Number,
-})
+}).asReadonly()
 export type OsallistujaMaksu = R.Static<typeof OsallistujaMaksu>
 
 export const OsallistujatMaksunTila = R.Record({
@@ -100,7 +100,7 @@ export const OsallistujatMaksunTila = R.Record({
   TilaisuusId: R.Number,
   Laskutettu: R.String.Or(R.Null),
   Maksettu: R.String.Or(R.Null),
-})
+}).asReadonly()
 export type OsallistujatMaksunTila = R.Static<typeof OsallistujatMaksunTila>
 
 export const Ryhma = R.Record({
@@ -113,60 +113,60 @@ export const Ryhma = R.Record({
   Paikkakunta: R.String,
   Maa: R.String,
   Maakoodi: R.String,
-})
+}).asReadonly()
 export type Ryhma = R.Static<typeof Ryhma>
 
 export const RyhmaLisatietokentta = R.Record({
   RyhmaId: R.Number,
   LisatietokenttaId: R.Number,
   Lisatiedot: R.String,
-})
+}).asReadonly()
 export type RyhmaLisatietokentta = R.Static<typeof RyhmaLisatietokentta>
 
 export const RyhmaLisavalinta = R.Record({
   RyhmaId: R.Number,
   LisavalintaId: R.Number,
-})
+}).asReadonly()
 export type RyhmaLisavalinta = R.Static<typeof RyhmaLisavalinta>
 
 export const RyhmaMaksu = R.Record({
   RyhmaId: R.Number,
   MaksuId: R.Number,
-})
+}).asReadonly()
 export type RyhmaMaksu = R.Static<typeof RyhmaMaksu>
 
 export const LokalisoidullaNimella = R.Record({
   Nimi: R.String,
   NimiSE: R.String.Or(R.Null),
   NimiEN: R.String.Or(R.Null),
-})
+}).asReadonly()
 export type LokalisoidullaNimella = R.Static<typeof LokalisoidullaNimella>
 
 export const TapahtumaTiedot = LokalisoidullaNimella.And(
   R.Record({
     Alkupvm: R.String,
     Loppupvm: R.String,
-  }),
+  }).asReadonly(),
 )
 export type TapahtumaTiedot = R.Static<typeof TapahtumaTiedot>
 
 export const TapahtumaAlaleiri = R.Record({
   Id: R.Number,
   Nimi: R.String,
-})
+}).asReadonly()
 export type TapahtumaAlaleiri = R.Static<typeof TapahtumaAlaleiri>
 
 export const TapahtumaKyla = R.Record({
   Id: R.Number,
   AlaleiriId: R.Number,
   Nimi: R.String,
-})
+}).asReadonly()
 export type TapahtumaKyla = R.Static<typeof TapahtumaKyla>
 
 export const TapahtumaKysymyssarja = LokalisoidullaNimella.And(
   R.Record({
     Id: R.Number,
-  }),
+  }).asReadonly(),
 )
 export type TapahtumaKysymyssarja = R.Static<typeof TapahtumaKysymyssarja>
 
@@ -174,7 +174,7 @@ export const TapahtumaLisatietokentta = LokalisoidullaNimella.And(
   R.Record({
     Id: R.Number,
     KysymyssarjaId: R.Number.Or(R.Null),
-  }),
+  }).asReadonly(),
 )
 export type TapahtumaLisatietokentta = R.Static<typeof TapahtumaLisatietokentta>
 
@@ -182,7 +182,7 @@ export const TapahtumaLisavalinnanPaaryhma = LokalisoidullaNimella.And(
   R.Record({
     Id: R.Number,
     KysymyssarjaId: R.Number.Or(R.Null),
-  }),
+  }).asReadonly(),
 )
 export type TapahtumaLisavalinnanPaaryhma = R.Static<
   typeof TapahtumaLisavalinnanPaaryhma
@@ -192,14 +192,14 @@ export const TapahtumaLisavalinta = LokalisoidullaNimella.And(
   R.Record({
     Id: R.Number,
     PaaryhmaId: R.Number,
-  }),
+  }).asReadonly(),
 )
 export type TapahtumaLisavalinta = R.Static<typeof TapahtumaLisavalinta>
 
 export const TapahtumaMaksunPaaryhma = LokalisoidullaNimella.And(
   R.Record({
     Id: R.Number,
-  }),
+  }).asReadonly(),
 )
 export type TapahtumaMaksunPaaryhma = R.Static<typeof TapahtumaMaksunPaaryhma>
 
@@ -207,6 +207,6 @@ export const TapahtumaMaksu = LokalisoidullaNimella.And(
   R.Record({
     Id: R.Number,
     PaaryhmaId: R.Number,
-  }),
+  }).asReadonly(),
 )
 export type TapahtumaMaksu = R.Static<typeof TapahtumaMaksu>
