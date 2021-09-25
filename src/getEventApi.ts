@@ -2,6 +2,7 @@ import * as Json from './json'
 import * as EventApi from './eventApi'
 import * as R from 'runtypes'
 import ProxyAgent = require('proxy-agent')
+import { importNodeFetch } from './importNodeFetch'
 
 const optionalDateRange = EventApi.DateRange.Or(R.Undefined)
 
@@ -50,7 +51,7 @@ export function getEventApi(
     return async (dateRange) => {
       optionalDateRange.check(dateRange)
 
-      const { default: fetch } = await import('node-fetch')
+      const fetch = await importNodeFetch()
       const response = await fetch(formatUrl(resource, dateRange).href, config)
       if (!response.ok) {
         return response.text().then((body) => {

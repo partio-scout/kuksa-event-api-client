@@ -5,7 +5,7 @@
   "main": "dist/lib.js",
   "typings": "dist/lib.d.ts",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && cp src/importNodeFetch.js dist/",
     "clean": "rm -rf dist kuksa-event-api-client.tar.gz",
     "preversion": "[[ $(git branch | grep '*' | cut -c 3-) = master ]] && rm -rf release kuksa-event-api-client.tar.gz",
     "version": "npm run build && mkdir release && cp -r dist package.json README.md release/ && tar -cf kuksa-event-api-client.tar.gz release/",
